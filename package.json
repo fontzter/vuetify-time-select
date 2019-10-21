@@ -1,0 +1,10 @@
+{
+  "name": "@fontzworks/vuetify-time-select",
+  "version": "1.0.0",
+  "description": "An alternative time-picker using dropdowns instead of the MD time wheel",
+  "main": "src",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true
+}
