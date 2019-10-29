@@ -1,42 +1,54 @@
 <template>
-  <v-input hide-details class="time-select">
-    <template v-slot:label>
+  <v-input hide-details class="time-select" :color="color">
+    <template v-if="label" v-slot:label>
       <div class="caption">{{ label }}</div>
     </template>
     <v-menu offset-y>
       <template v-slot:activator="{ on }">
-        <v-btn outlined class="time-hours" v-on="on">
+        <v-btn outlined class="time-hours" :color="color" v-on="on">
           <span>{{ value ? hour : 'H' }}</span>
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
       </template>
       <v-list dense>
-        <v-list-item v-for="hr in 12" :key="hr" @click="hour = hr.toString()"
-          >{{ hr }}
+        <v-list-item
+          v-for="hr in 12"
+          :key="hr"
+          class="pr-0 pl-2"
+          @click="hour = hr === 1 ? 12 : hr - 1"
+          >{{ hr === 1 ? 12 : hr - 1 }}
         </v-list-item>
       </v-list>
     </v-menu>
-    <div class="px-1">:</div>
-    <v-menu offset-y max-height="80vh">
+    <div class="">:</div>
+    <v-menu
+      v-model="minMenu"
+      offset-y
+      max-height="80vh"
+      :close-on-content-click="false"
+    >
       <template v-slot:activator="{ on: menu }">
-        <v-btn outlined class="time-minutes" v-on="menu">
+        <v-btn outlined class="time-minutes" :color="color" v-on="menu">
           <span>{{ value ? minute : 'M' }}</span>
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
       </template>
       <v-list dense>
         <v-list-item
-          v-for="min in 60"
+          v-for="min in minuteList"
           :key="min"
-          :class="{ 'font-weight-bold': [0, 15, 30, 45].includes(min) }"
-          @click="minute = min.toString().padStart(2, '0')"
-          >{{ min.toString().padStart(2, '0') }}
+          class="pr-0 pl-2"
+          :class="getMinuteClass(min)"
+          @click="onMinuteClick(min)"
+        >
+          <v-icon v-if="min.includes('-')">mdi-dots-horizontal</v-icon>
+          <span v-else>{{ min }}</span>
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-btn-toggle v-model="amPm" class="toggle-am-pm pl-1">
-      <v-btn value="am" class="btn-am">am</v-btn>
-      <v-btn value="pm" class="btn-pm">pm</v-btn>
+    <v-btn-toggle v-model="isAm" class="toggle-am-pm" :color="color">
+      <v-btn :value="true" class="btn-am">am</v-btn>
+      <v-btn :value="false" class="btn-pm">pm</v-btn>
     </v-btn-toggle>
   </v-input>
 </template>
@@ -45,7 +57,11 @@
 export default {
   name: 'TimeSelect',
   props: {
-    value: {
+    alwaysShow: {
+      type: Array,
+      default: () => [0, 10, 15, 20, 30, 40, 45, 50],
+    },
+    color: {
       type: String,
       default: '',
     },
@@ -53,24 +69,60 @@ export default {
       type: String,
       default: 'Time',
     },
+    value: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
-      menu: false,
+      expandedMinutes: null,
+      minMenu: false,
     }
   },
-
   computed: {
+    hour24() {
+      if (!this.$props.value) return 12
+      return Number(this.$props.value.split(':')[0])
+    },
     hour: {
       get() {
-        if (!this.$props.value) return '12'
-        return this.$props.value.split(':')[0]
+        return this.hour24 % 12 === 0 ? 12 : this.hour24 % 12
       },
       set(value) {
         if (value) {
-          this.$emit('input', `${value}:${this.minute}${this.amPm}`)
+          const hr = `${(value === 12 ? 0 : value) +
+            (this.isAm ? 0 : 12)}`.padStart(2, '0')
+          this.$emit('input', `${hr}:${this.minute}`)
         }
       },
+    },
+    expandedStart() {
+      return this.expandedMinutes
+        ? parseInt(this.expandedMinutes.split('-')[1])
+        : -1
+    },
+    expandedEnd() {
+      return this.expandedMinutes
+        ? parseInt(this.expandedMinutes.split('-')[2])
+        : -1
+    },
+    minuteList() {
+      return Array.from(Array(60).keys())
+        .map(i => {
+          if (
+            this.alwaysShow.includes(i) ||
+            (i >= this.expandedStart && i <= this.expandedEnd)
+          ) {
+            return `${i}`.padStart(2, '0')
+          } else if (this.alwaysShow.includes(i - 1)) {
+            const end = this.alwaysShow.find(a => a > i) || 59
+            return `ellipsis-${i}-${end}`
+          } else {
+            return false
+          }
+        })
+        .filter(i => !!i)
     },
     minute: {
       get() {
@@ -79,20 +131,32 @@ export default {
       },
       set(value) {
         if (value) {
-          this.$emit('input', `${this.hour}:${value}${this.amPm}`)
+          this.$emit('input', `${('' + this.hour24).padStart(2, '0')}:${value}`)
         }
       },
     },
-    amPm: {
+    isAm: {
       get() {
-        if (!this.$props.value) return 'pm'
-        return this.$props.value.replace(/[^apm]/g, '')
+        return this.hour24 < 12
       },
-      set(value) {
-        if (value) {
-          this.$emit('input', `${this.hour}:${this.minute}${value}`)
-        }
+      set(toAm) {
+        if (toAm === this.isAm) return // avoid if not changing
+        const hr = `${this.hour24 + (toAm ? -12 : 12)}`.padStart(2, '0')
+        this.$emit('input', `${hr}:${this.minute}`)
       },
+    },
+  },
+  methods: {
+    onMinuteClick(min) {
+      const isEllipsis = min.includes('-')
+      this.expandedMinutes = isEllipsis ? min : null
+      if (!isEllipsis) {
+        this.minMenu = false
+        this.minute = min
+      }
+    },
+    getMinuteClass(min) {
+      return this.alwaysShow.includes(parseInt(min)) ? 'font-weight-bold' : ''
     },
   },
 }
@@ -109,8 +173,8 @@ export default {
 }
 .time-hours,
 .time-minutes {
-  width: 50px;
-  min-width: 50px !important;
+  width: 40px;
+  min-width: 40px !important;
   height: 32px !important;
 }
 .time-hours i.v-icon,
