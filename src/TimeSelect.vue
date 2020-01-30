@@ -177,9 +177,9 @@ export default {
   min-width: 40px !important;
   height: 32px !important;
 }
-.time-hours i.v-icon,
-.time-minutes i.v-icon {
-  margin-left: 0px;
+.time-hours  .v-btn__content i.v-icon,
+.time-minutes  .v-btn__content i.v-icon {
+  margin-left: -4px;
 }
 
 .time-select .toggle-am-pm .v-btn.v-size--default {
