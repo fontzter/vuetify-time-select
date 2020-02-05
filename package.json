@@ -1,8 +1,24 @@
 {
   "name": "vuetify-time-select",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "An alternative time-picker using dropdowns instead of the MD time wheel",
+  "author": "David Fontz <dave@fontzworks.com> (https://fontzworks.com)",
+  "license": "MIT",
   "main": "src",
+  "keywords": [
+    "time",
+    "time-picker",
+    "vuetify",
+    "vue"
+  ],
+  "homepage": "https://github.com/fontzter/vuetify-time-select#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fontzter/vuetify-time-select.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fontzter/vuetify-time-select/issues"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }
