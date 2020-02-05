@@ -1,6 +1,7 @@
 # vuetify-time-select
 
 An alternative time-picker using dropdowns instead of the MD time "wheel".
+
 **Requires [Vuetify](https://vuetifyjs.com/)** - built using Vuetify Components
 
 While [Vuetify's TimePicker](https://vuetifyjs.com/en/components/time-pickers) is an excellent component and conforms to the Material Design Specs, some users may find it confusing or cumbersome (especially on a desktop app). This component is provided as an alternative that still conforms to (other) MD specs and works within the Vuetify ecosystem. 
