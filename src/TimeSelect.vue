@@ -6,7 +6,7 @@
     <v-menu offset-y>
       <template v-slot:activator="{ on }">
         <v-btn outlined class="time-hours" :color="color" v-on="on">
-          <span>{{ value ? hour : 'H' }}</span>
+          <span>{{ value ? hour : "H" }}</span>
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
       </template>
@@ -29,7 +29,7 @@
     >
       <template v-slot:activator="{ on: menu }">
         <v-btn outlined class="time-minutes" :color="color" v-on="menu">
-          <span>{{ value ? minute : 'M' }}</span>
+          <span>{{ value ? minute : "M" }}</span>
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
       </template>
@@ -55,111 +55,116 @@
 
 <script>
 export default {
-  name: 'TimeSelect',
+  name: "TimeSelect",
   props: {
-    alwaysShow: {
-      type: Array,
-      default: () => [0, 10, 15, 20, 30, 40, 45, 50],
-    },
     color: {
       type: String,
-      default: '',
+      default: null
     },
     label: {
       type: String,
-      default: 'Time',
+      default: "Time"
+    },
+    minuteGroups: {
+      type: Array,
+      default: () => [0, 15, 30, 45]
     },
     value: {
       type: String,
-      default: '',
-    },
+      default: null
+    }
   },
   data() {
     return {
       expandedMinutes: null,
-      minMenu: false,
-    }
+      minMenu: false
+    };
   },
   computed: {
     hour24() {
-      if (!this.$props.value) return 12
-      return Number(this.$props.value.split(':')[0])
+      if (!this.$props.value) return 12;
+      return Number(this.$props.value.split(":")[0]);
     },
     hour: {
       get() {
-        return this.hour24 % 12 === 0 ? 12 : this.hour24 % 12
+        return this.hour24 % 12 === 0 ? 12 : this.hour24 % 12;
       },
       set(value) {
         if (value) {
           const hr = `${(value === 12 ? 0 : value) +
-            (this.isAm ? 0 : 12)}`.padStart(2, '0')
-          this.$emit('input', `${hr}:${this.minute}`)
+            (this.isAm ? 0 : 12)}`.padStart(2, "0");
+          this.$emit("input", `${hr}:${this.minute}`);
         }
-      },
+      }
     },
     expandedStart() {
       return this.expandedMinutes
-        ? parseInt(this.expandedMinutes.split('-')[1])
-        : -1
+        ? parseInt(this.expandedMinutes.split("-")[1])
+        : -1;
     },
     expandedEnd() {
       return this.expandedMinutes
-        ? parseInt(this.expandedMinutes.split('-')[2])
-        : -1
+        ? parseInt(this.expandedMinutes.split("-")[2])
+        : -1;
     },
     minuteList() {
       return Array.from(Array(60).keys())
         .map(i => {
           if (
-            this.alwaysShow.includes(i) ||
+            this.minuteGroups.includes(i) ||
             (i >= this.expandedStart && i <= this.expandedEnd)
           ) {
-            return `${i}`.padStart(2, '0')
-          } else if (this.alwaysShow.includes(i - 1)) {
-            const end = this.alwaysShow.find(a => a > i) || 59
-            return `ellipsis-${i}-${end}`
+            return `${i}`.padStart(2, "0");
+          } else if (this.minuteGroups.includes(i - 1)) {
+            const end = this.minuteGroups.find(a => a > i) || 59;
+            return `ellipsis-${i}-${end}`;
           } else {
-            return false
+            return false;
           }
         })
-        .filter(i => !!i)
+        .filter(i => !!i);
     },
     minute: {
       get() {
-        if (!this.$props.value) return '00'
-        return this.$props.value.split(':')[1].replace(/\D+/g, '')
+        if (!this.$props.value) return "00";
+        return this.$props.value.split(":")[1].replace(/\D+/g, "");
       },
       set(value) {
         if (value) {
-          this.$emit('input', `${('' + this.hour24).padStart(2, '0')}:${value}`)
+          this.$emit(
+            "input",
+            `${("" + this.hour24).padStart(2, "0")}:${value}`
+          );
         }
-      },
+      }
     },
     isAm: {
       get() {
-        return this.hour24 < 12
+        return this.hour24 < 12;
       },
       set(toAm) {
-        if (toAm === this.isAm) return // avoid if not changing
-        const hr = `${this.hour24 + (toAm ? -12 : 12)}`.padStart(2, '0')
-        this.$emit('input', `${hr}:${this.minute}`)
-      },
-    },
+        if (toAm === this.isAm) return; // avoid if not changing
+        const hr = `${this.hour24 + (toAm ? -12 : 12)}`.padStart(2, "0");
+        this.$emit("input", `${hr}:${this.minute}`);
+      }
+    }
   },
   methods: {
     onMinuteClick(min) {
-      const isEllipsis = min.includes('-')
-      this.expandedMinutes = isEllipsis ? min : null
+      const isEllipsis = min.includes("-");
+      this.expandedMinutes = isEllipsis ? min : null;
       if (!isEllipsis) {
-        this.minMenu = false
-        this.minute = min
+        this.minMenu = false;
+        this.minute = min;
       }
     },
     getMinuteClass(min) {
-      return this.alwaysShow.includes(parseInt(min)) ? 'font-weight-bold' : ''
-    },
-  },
-}
+      return this.minuteGroups.includes(parseInt(min))
+        ? "font-weight-bold"
+        : "";
+    }
+  }
+};
 </script>
 
 <style>
@@ -177,8 +182,8 @@ export default {
   min-width: 40px !important;
   height: 32px !important;
 }
-.time-hours  .v-btn__content i.v-icon,
-.time-minutes  .v-btn__content i.v-icon {
+.time-hours .v-btn__content i.v-icon,
+.time-minutes .v-btn__content i.v-icon {
   margin-left: -4px;
 }
 
