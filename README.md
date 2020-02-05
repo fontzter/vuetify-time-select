@@ -1,5 +1,9 @@
 # vuetify-time-select
 
+[![NPM](https://img.shields.io/npm/v/vuetify-time-select)](https://www.npmjs.com/package/vuetify-time-select)
+[![Downloads at NPM](https://img.shields.io/npm/dw/vuetify-time-select)](https://www.npmjs.com/package/vuetify-time-select)
+[![GitHub](https://img.shields.io/github/license/fontzter/vuetify-time-select)](https://github.com/fontzter/vuetify-time-select/blob/master/LICENSE)
+
 An alternative time-picker using dropdowns instead of the MD time "wheel".
 
 **Requires [Vuetify](https://vuetifyjs.com/)** - built using Vuetify Components
@@ -30,7 +34,7 @@ If you want the component to be registered and available globally, from your mai
 import Vue from 'vue'
 import VuetifyTimeSelect from 'vuetify-time-select'
 
-Vue.use(VuetifyTimeSelect)
+Vue.component('vuetify-time-select', VuetifyTimeSelect)
 ```
 
 Or if you just want to use the `vuetify-time-select` component within another component:
