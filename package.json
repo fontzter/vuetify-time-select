@@ -1,6 +1,6 @@
 {
   "name": "vuetify-time-select",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "An alternative time-picker using dropdowns instead of the MD time wheel",
   "author": "David Fontz <dave@fontzworks.com> (https://fontzworks.com)",
   "license": "MIT",
