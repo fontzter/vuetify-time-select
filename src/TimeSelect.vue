@@ -46,7 +46,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-btn-toggle v-model="isAm" class="toggle-am-pm" :color="color">
+    <v-btn-toggle v-model="isAm" mandatory class="toggle-am-pm" :color="color">
       <v-btn :value="true" class="btn-am">am</v-btn>
       <v-btn :value="false" class="btn-pm">pm</v-btn>
     </v-btn-toggle>
